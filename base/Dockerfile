@@ -16,7 +16,7 @@ WORKDIR /var/www
 RUN git clone https://github.com/datalogics/circulation.git
 WORKDIR circulation
 RUN git checkout master #tags/$version
-RUN /bin/bash -c 'git config submodule.core.url https://github.com/NYPL-Simplified/server_core.git && git submodule update --init --recursive'
+RUN /bin/bash -c 'git config submodule.core.url https://github.com/datalogics/server_core && git submodule update --init --recursive'
 COPY post-receive.sample .git/hooks
 
 # Set up the virtual environment and install python libraries
