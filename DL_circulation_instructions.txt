@@ -1,0 +1,33 @@
+~~~Note if you do not have Docker please see https://docs.docker.com/engine/getstarted/step_one/ for installation instructions~~~
+
+* install and set up Postgres
+** docker pull postgres:9.5 # get postgres
+** docker run -d --name pg postgres:9.5        # create a postgres container
+** docker ps                                   # confirm that it's running
+** docker inspect pg | grep 'IPAddress'        # note its IP address
+** docker exec -u postgres pg psql -c "create user simplified with password 'test';"    # create a user and password
+** docker exec -u postgres pg psql -c "create database simplified_circ_db;"            # create database
+** docker exec -u postgres pg psql -c "grant all privileges on database simplified_circ_db to simplified;"
+** Add postgres to the config
+*** Add the Postgres URL to your configuration file. In config.json, add the appropriate production_url. You should end up with something like "postgres://simplified:test@172.17.0.3:5432/simplified_circ_db", following the "postgres://<USERNAME>:<PASSWORD>@<HOST>:<PORT>/<DATABASE_NAME>" format.
+
+* build dl/circ-base image by running "docker build . -t dl/circ-base:1.0" from the /base directory
+** confirm that it exists by running "docker images"
+
+* build dl/circ-deploy image by running "docker build . -t dl/circ-deploy:1.0" from the /deploy directory
+** confirm that it exists by running "docker images"
+
+* get Elasticsearch by running "docker pull elasticsearch:1"
+** Create an Elasticsearch container with the following commands
+    $ sudo docker run -d --name es elasticsearch:1     # create an elasticsearch container
+    $ sudo docker ps                                   # confirm that it's running
+    $ sudo docker inspect es | grep 'IPAddress'        # note its IP address
+
+
+* create the Circulation Manager deployment container
+** run the following command from the root directory (where config.json should be located)
+    docker run -d -p 80:80 --name dlcirc-deploy -v path/to/config.json:/var/www/circulation/config.json dl/circ-deploy:1.0
+** at this point you should be able to see the feed show up on the server
+** if you are getting postgresql errors about duplicate tables and stuff then you need to kick the Server by stopping and starting it (Courtney said this is a bug)
+*** docker stop dlcirc-deploy && docker start dlcirc-deploy
+~~~note: you can get into the running container with "docker exec -it [container-id] bash" (note that very little is installed here so you may need to install some tools, eg."apt-get install vim") ~~~
