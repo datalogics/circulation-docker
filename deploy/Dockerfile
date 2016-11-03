@@ -1,6 +1,6 @@
-FROM nypl/circ-base
+FROM dl/circ-base:1.0
 
-MAINTAINER Library Simplified <info@librarysimplified.org>
+MAINTAINER Datalogics <support@datalogics.com>
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         nginx \
